@@ -21,53 +21,6 @@ include (CheckCSourceRuns)
 include (CheckSymbolExists)
 include (CheckTypeSize)
 
-# Common Configuration
-include(../../build/helper.cmake)
-get_project_name(var_project_name)
-
-get_relative_output_dir(var_relative_output_dir)
-set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/../../stage/${var_relative_output_dir})
-
-# # Zlib
-function(configure_thirdparty var_ext_project_name var_ext_project_dir var_extra_args)
-  set(var_args -DBUILD_USE_WCHAR=${BUILD_USE_WCHAR})
-
-  get_relative_output_dir(var_relative_output_dir)  
-  set(my_install_prefix ${CMAKE_INSTALL_PREFIX})
-  set(var_args ${var_args} -DCMAKE_INSTALL_PREFIX=${my_install_prefix})
-  
-  if (CMAKE_TOOLCHAIN_FILE)
-    set(var_args ${var_args} -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE})
-  endif()
-  if (CMAKE_BUILD_TYPE)
-    set(var_args ${var_args} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
-  endif()
-
-  # These should be the last
-  if (CMAKE_GENERATOR_TOOLSET)
-    set(var_args ${var_args} -G "${CMAKE_GENERATOR}")
-  endif()
-  if (CMAKE_GENERATOR_TOOLSET)
-    set(var_args ${var_args} -T "${CMAKE_GENERATOR_TOOLSET}")
-  endif()
-
-  file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${var_ext_project_name}")
-  execute_process(COMMAND ${CMAKE_COMMAND} ${var_extra_args} ${var_args} ${var_ext_project_dir}
-      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${var_ext_project_name}")
-  # Build and install subproject
-  execute_process(COMMAND ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_BINARY_DIR}/${var_ext_project_name} --config ${CMAKE_BUILD_TYPE} --target install)
-
-endfunction(configure_thirdparty)
-
-get_thirdparty_dir(var_zlib_thirdparty_dir)
-set(var_zlib_thirdparty_dir "${var_zlib_thirdparty_dir}/zlib")
-log("info" 1 "CMakeLists" "zlib ThirdParty Location: ${var_zlib_thirdparty_dir}")
-# Configure subproject into ${CMAKE_CURRENT_BINARY_DIR}/zlib and install into stage/.../zipper/zlib
-configure_thirdparty("zlib" ${var_zlib_thirdparty_dir} "${var_extra_args}")
-
-set(LIBZ_LIBRARY ${CMAKE_CURRENT_SOURCE_DIR}/../../stage/${var_relative_output_dir}/../zlib/lib)
-set(LIBZ_INCLUDE_DIR ${LIBZ_LIBRARY}/../include)
-
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/VERSION.txt")
 
     file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/VERSION.txt" VersionString NEWLINE_CONSUME)
