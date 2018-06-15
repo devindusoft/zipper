@@ -21,10 +21,6 @@ include (CheckCSourceRuns)
 include (CheckSymbolExists)
 include (CheckTypeSize)
 
-IF(WIN32 AND NOT CYGWIN)
-    ADD_DEFINITIONS(-DZLIB_WINAPI)
-ENDIF(WIN32 AND NOT CYGWIN)
-
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/VERSION.txt")
 
     file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/VERSION.txt" VersionString NEWLINE_CONSUME)
